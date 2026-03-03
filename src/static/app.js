@@ -34,6 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
     technology: { label: "Technology", color: "#e8eaf6", textColor: "#3949ab" },
   };
 
+  // School name used in share text
+  const SCHOOL_NAME = "Mergington High School";
+
   // State for activities and filters
   let allActivities = {};
   let currentFilter = "all";
@@ -243,6 +246,12 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("click", (event) => {
     if (event.target === loginModal) {
       closeLoginModalHandler();
+    }
+    // Close any open share dropdowns when clicking outside
+    if (!event.target.closest(".share-section")) {
+      document.querySelectorAll(".share-options").forEach((el) => {
+        el.classList.add("hidden");
+      });
     }
   });
 
@@ -470,6 +479,20 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.entries(filteredActivities).forEach(([name, details]) => {
       renderActivityCard(name, details);
     });
+
+    // Highlight and scroll to activity from shared URL if present
+    const sharedActivity = new URLSearchParams(window.location.search).get("activity");
+    if (sharedActivity) {
+      const cards = activitiesList.querySelectorAll(".activity-card");
+      cards.forEach((card) => {
+        const title = card.querySelector("h4");
+        if (title && title.textContent.trim() === sharedActivity) {
+          card.classList.add("activity-highlighted");
+          card.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => card.classList.remove("activity-highlighted"), 3000);
+        }
+      });
+    }
   }
 
   // Function to render a single activity card
@@ -515,6 +538,26 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="capacity-text">
           <span>${takenSpots} enrolled</span>
           <span>${spotsLeft} spots left</span>
+        </div>
+      </div>
+    `;
+
+    // Build share URLs for social platforms
+    const shareUrl = `${window.location.origin}${window.location.pathname}?activity=${encodeURIComponent(name)}`;
+    const shareText = `Check out ${name} at ${SCHOOL_NAME}! ${details.description}`;
+    const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+    const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
+
+    // Create share section HTML
+    const shareSection = `
+      <div class="share-section">
+        <button class="share-toggle" title="Share this activity">🔗 Share</button>
+        <div class="share-options hidden">
+          <a href="${twitterShareUrl}" target="_blank" rel="noopener noreferrer" class="share-btn share-twitter" title="Share on X (Twitter)">𝕏</a>
+          <a href="${facebookShareUrl}" target="_blank" rel="noopener noreferrer" class="share-btn share-facebook" title="Share on Facebook">f</a>
+          <a href="${whatsappShareUrl}" target="_blank" rel="noopener noreferrer" class="share-btn share-whatsapp" title="Share on WhatsApp">💬</a>
+          <button class="share-btn share-copy" data-url="${shareUrl}" title="Copy link to clipboard">📋</button>
         </div>
       </div>
     `;
@@ -569,6 +612,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      ${shareSection}
     `;
 
     // Add click handlers for delete buttons
@@ -586,6 +630,37 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Share toggle: show/hide share options
+    const shareToggle = activityCard.querySelector(".share-toggle");
+    const shareOptions = activityCard.querySelector(".share-options");
+    shareToggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      // Close any other open share dropdowns
+      document.querySelectorAll(".share-options").forEach((el) => {
+        if (el !== shareOptions) el.classList.add("hidden");
+      });
+      shareOptions.classList.toggle("hidden");
+    });
+
+    // Copy link button
+    const copyBtn = activityCard.querySelector(".share-copy");
+    copyBtn.addEventListener("click", () => {
+      const url = copyBtn.dataset.url;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+          copyBtn.textContent = "✓";
+          copyBtn.title = "Copied!";
+          setTimeout(() => {
+            copyBtn.textContent = "📋";
+            copyBtn.title = "Copy link to clipboard";
+          }, 2000);
+        });
+      } else {
+        // Fallback: show the URL for manual copying
+        window.prompt("Copy this link to share:", url);
+      }
+    });
 
     activitiesList.appendChild(activityCard);
   }
