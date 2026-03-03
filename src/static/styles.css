@@ -476,6 +476,95 @@ footer {
   font-size: 0.8rem;
 }
 
+/* Social sharing buttons */
+.share-section {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+  margin-top: 8px;
+}
+
+.share-toggle {
+  background-color: var(--background);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.share-toggle:hover {
+  background-color: var(--border);
+  color: var(--text-primary);
+}
+
+.share-options {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  right: 0;
+  display: flex;
+  gap: 6px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+  align-items: center;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.share-btn:hover {
+  opacity: 0.85;
+  transform: scale(1.1);
+}
+
+.share-twitter {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.share-facebook {
+  background-color: #1877f2;
+  color: #ffffff;
+}
+
+.share-whatsapp {
+  background-color: #25d366;
+  color: #ffffff;
+}
+
+.share-copy {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+/* Highlight for shared activity links */
+.activity-highlighted {
+  outline: 3px solid var(--secondary);
+  box-shadow: 0 0 0 6px rgba(255, 111, 0, 0.15);
+  transition: outline 0.3s ease, box-shadow 0.3s ease;
+}
+
 /* Search and Filter Components - Updated for Sidebar */
 .search-box {
   display: flex;
